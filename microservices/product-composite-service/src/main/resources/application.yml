@@ -1,16 +1,16 @@
-server.port: 7000
+server.port: 9000
 server.error.include-message: always
 
 app:
   product-service:
     host: localhost
-    port: 7001
+    port: 9001
   recommendation-service:
     host: localhost
-    port: 7002
+    port: 9002
   review-service:
     host: localhost
-    port: 7003
+    port: 9003
 
 logging:
   level:

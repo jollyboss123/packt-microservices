@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
         LOG.debug("/product return the found product for productId={}", productId);
 
         if (productId < 1) {
-            throw new InvalidInputException(String.format("Invalid products: %d", productId));
+            throw new InvalidInputException(String.format("Invalid productId: %d", productId));
         }
 
         if (productId == 13) {

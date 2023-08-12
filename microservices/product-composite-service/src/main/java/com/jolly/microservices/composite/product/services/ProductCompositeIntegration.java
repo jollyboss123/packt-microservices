@@ -54,8 +54,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         this.mapper = mapper;
 
         this.productServiceUrl = String.format("http://%s:%s/product/", productServiceHost, productServicePort);
-        this.recommendationServiceUrl = String.format("http://%s:%s/product/?productId=", recommendationServiceHost, recommendationServicePort);
-        this.reviewServiceUrl = String.format("http://%s:%s/product/?productId=", reviewServiceHost, reviewServicePort);
+        this.recommendationServiceUrl = String.format("http://%s:%s/recommendation?productId=", recommendationServiceHost, recommendationServicePort);
+        this.reviewServiceUrl = String.format("http://%s:%s/review?productId=", reviewServiceHost, reviewServicePort);
     }
 
     @Override
