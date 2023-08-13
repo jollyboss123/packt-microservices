@@ -15,12 +15,13 @@ repositories {
 }
 
 val springBootVersion by extra { "3.1.2" }
+val springdocVersion by extra { "2.2.0" }
 
 dependencies {
 	implementation(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
 
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
-	implementation("org.springdoc:springdoc-openapi-starter-common:2.2.0")
+	implementation("org.springdoc:springdoc-openapi-starter-common:${springdocVersion}")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
