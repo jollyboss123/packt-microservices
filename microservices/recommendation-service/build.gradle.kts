@@ -26,10 +26,6 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 }
 
-tasks.withType<Jar> {
-	enabled = false
-}
-
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
