@@ -1,7 +1,6 @@
-# Read Me First
-The following was discovered as part of building this project:
-
-* The original package name 'com.jolly.microservices.core.product.product-service' is invalid and this project uses 'com.jolly.microservices.core.product.productservice' instead.
+# Prototyping microservices
+Prototyping microservices based on Magnus Larsson's book with Spring Boot 3, Java 17 and dockerizing with eclipse-temurin:17-jre-alpine.
+Changes has been implemented using Java 17 specific updates e.g. record etc.
 
 # Getting Started
 ### To test

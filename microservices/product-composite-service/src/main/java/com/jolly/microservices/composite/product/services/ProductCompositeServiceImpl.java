@@ -6,6 +6,8 @@ import com.jolly.microservices.api.core.recommendation.Recommendation;
 import com.jolly.microservices.api.core.review.Review;
 import com.jolly.microservices.api.exceptions.NotFoundException;
 import com.jolly.microservices.util.http.ServiceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 public class ProductCompositeServiceImpl implements ProductCompositeService {
+    private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeServiceImpl.class);
     private final ServiceUtil serviceUtil;
     private final ProductCompositeIntegration integration;
 
@@ -41,6 +44,52 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
         return createProductAggregate(product, recommendations, reviews, serviceUtil.getServiceAddress());
     }
 
+    @Override
+    public void createProduct(ProductAggregate body) {
+        try {
+            Product product = new Product(body.productId(), body.name(), body.weight(), null);
+            integration.createProduct(product);
+
+            if (body.recommendations() != null) {
+                body.recommendations().forEach(r -> {
+                    Recommendation recommendation = new Recommendation(
+                            body.productId(),
+                            r.recommendationId(),
+                            r.author(),
+                            r.rate(),
+                            r.content(),
+                            null
+                    );
+                    integration.createRecommendation(recommendation);
+                });
+            }
+
+            if (body.reviews() != null) {
+                body.reviews().forEach(r -> {
+                    Review review = new Review(
+                            body.productId(),
+                            r.reviewId(),
+                            r.author(),
+                            r.subject(),
+                            r.content(),
+                            null
+                    );
+                    integration.createReview(review);
+                });
+            }
+        } catch (RuntimeException up) {
+            LOG.warn("createCompositeProduct failed", up);
+            throw up;
+        }
+    }
+
+    @Override
+    public void deleteProduct(int productId) {
+        integration.deleteProduct(productId);
+        integration.deleteRecommendations(productId);
+        integration.deleteReviews(productId);
+    }
+
     private ProductAggregate createProductAggregate(
             Product product,
             List<Recommendation> recommendations,
@@ -55,13 +104,13 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
         // 2. Copy summary recommendation info, if available
         List<RecommendationSummary> recommendationSummaries =
                 (recommendations == null) ? null : recommendations.stream()
-                        .map(r -> new RecommendationSummary(r.recommendationId(), r.author(), r.rate()))
+                        .map(r -> new RecommendationSummary(r.recommendationId(), r.author(), r.rate(), r.content()))
                         .collect(Collectors.toList());
 
         // 3. Copy summary review info, if available
         List<ReviewSummary> reviewSummaries =
                 (reviews == null) ? null : reviews.stream()
-                        .map(r -> new ReviewSummary(r.reviewId(), r.author(), r.subject()))
+                        .map(r -> new ReviewSummary(r.reviewId(), r.author(), r.subject(), r.content()))
                         .collect(Collectors.toList());
 
         // 4. Create info regarding the involved microservices addresses

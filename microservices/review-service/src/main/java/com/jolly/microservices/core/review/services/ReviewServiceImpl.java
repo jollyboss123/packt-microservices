@@ -3,10 +3,13 @@ package com.jolly.microservices.core.review.services;
 import com.jolly.microservices.api.core.review.Review;
 import com.jolly.microservices.api.core.review.ReviewService;
 import com.jolly.microservices.api.exceptions.InvalidInputException;
+import com.jolly.microservices.core.review.persistence.ReviewEntity;
+import com.jolly.microservices.core.review.persistence.ReviewRepository;
 import com.jolly.microservices.util.http.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -20,10 +23,18 @@ public class ReviewServiceImpl implements ReviewService {
     private static final Logger LOG = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
     private final ServiceUtil serviceUtil;
+    private final ReviewRepository repository;
+    private final ReviewMapper mapper;
 
     @Autowired
-    public ReviewServiceImpl(ServiceUtil serviceUtil) {
+    public ReviewServiceImpl(
+            ServiceUtil serviceUtil,
+            ReviewRepository repository,
+            ReviewMapper mapper
+    ) {
         this.serviceUtil = serviceUtil;
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -46,5 +57,25 @@ public class ReviewServiceImpl implements ReviewService {
         LOG.debug("/reviews response size: {}", list.size());
 
         return list;
+    }
+
+    @Override
+    public Review createReview(Review body) {
+        try {
+            ReviewEntity entity = mapper.apiToEntity(body);
+            ReviewEntity newEntity = repository.save(entity);
+
+            LOG.debug("createReview: created a review entity: {}/{}", body.productId(), body.reviewId());
+            return mapper.entityToApi(newEntity);
+
+        } catch (DataIntegrityViolationException dive) {
+            throw new InvalidInputException(String.format("Duplicate key, Product Id: %d, Review Id: %d", body.productId(), body.reviewId()));
+        }
+    }
+
+    @Override
+    public void deleteReviews(int productId) {
+        LOG.debug("deleteReviews: tries to delete reviews for the product with productId: {}", productId);
+        repository.deleteAll(repository.findByProductId(productId));
     }
 }

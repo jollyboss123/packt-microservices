@@ -17,6 +17,7 @@ repositories {
 
 val mapstructVersion by extra { "1.5.5.Final" }
 val testcontainersVersion by extra { "1.18.3" }
+val mysqlConnectorVersion by extra { "8.1.0" }
 
 dependencies {
 	implementation(project(":api"))
@@ -31,7 +32,7 @@ dependencies {
 	testAnnotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("mysql:mysql-connector-java")
+	implementation("com.mysql:mysql-connector-j:${mysqlConnectorVersion}")
 	implementation(platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
 	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
