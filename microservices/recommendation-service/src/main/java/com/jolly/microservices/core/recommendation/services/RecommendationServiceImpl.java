@@ -11,9 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.logging.Level.FINE;
 
 /**
  * @author jolly
@@ -37,46 +41,49 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public List<Recommendation> getRecommendations(int productId) {
+    public Mono<Recommendation> createRecommendation(Recommendation body) {
+        if (body.productId() < 1) {
+            throw new InvalidInputException("Invalid productId: " + body.productId());
+        }
 
+        RecommendationEntity entity = mapper.apiToEntity(body);
+
+        return repository.save(entity)
+                .log(LOG.getName(), FINE)
+                .onErrorMap(
+                        DuplicateKeyException.class,
+                        ex -> new InvalidInputException("Duplicate key, Product Id: " + body.productId() + ", Recommendation Id:" + body.recommendationId()))
+                .map(mapper::entityToApi);
+    }
+
+    @Override
+    public Flux<Recommendation> getRecommendations(int productId) {
         if (productId < 1) {
             throw new InvalidInputException("Invalid productId: " + productId);
         }
 
-        if (productId == 113) {
-            LOG.debug("No recommendations found for productId: {}", productId);
-            return new ArrayList<>();
-        }
+        LOG.info("Will get recommendations for product with id={}", productId);
 
-        List<Recommendation> list = new ArrayList<>();
-        list.add(new Recommendation(productId, 1, "Author 1", 1, "Content 1", serviceUtil.getServiceAddress()));
-        list.add(new Recommendation(productId, 2, "Author 2", 2, "Content 2", serviceUtil.getServiceAddress()));
-        list.add(new Recommendation(productId, 3, "Author 3", 3, "Content 3", serviceUtil.getServiceAddress()));
-
-        LOG.debug("/recommendation response size: {}", list.size());
-
-        return list;
+        return repository.findByProductId(productId)
+                .log(LOG.getName(), FINE)
+                .map(mapper::entityToApi)
+                .map(e -> new Recommendation(
+                        e.productId(),
+                        e.recommendationId(),
+                        e.author(),
+                        e.rate(),
+                        e.content(),
+                        serviceUtil.getServiceAddress()
+                ));
     }
 
     @Override
-    public Recommendation createRecommendation(Recommendation body) {
-        try {
-            RecommendationEntity entity = mapper.apiToEntity(body);
-            RecommendationEntity newEntity = repository.save(entity);
-
-            LOG.debug("createRecommendation: created a recommendation entity: {}/{}", body.productId(), body.recommendationId());
-            return mapper.entityToApi(newEntity);
-
-        } catch (DuplicateKeyException dke) {
-            throw new InvalidInputException(
-                    String.format("Duplicate key, Product Id: %d, Recommendation Id: %d",
-                            body.productId(), body.recommendationId()));
+    public Mono<Void> deleteRecommendations(int productId) {
+        if (productId < 1) {
+            throw new InvalidInputException("Invalid productId: " + productId);
         }
-    }
 
-    @Override
-    public void deleteRecommendations(int productId) {
         LOG.debug("deleteRecommendations: tries to delete recommendations for the product with productId: {}", productId);
-        repository.deleteAll(repository.findByProductId(productId));
+        return repository.deleteAll(repository.findByProductId(productId));
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -42,15 +43,15 @@ class ProductCompositeServiceApplicationTests {
 	@BeforeEach
 	void setUp() {
 		when(integration.getProduct(PRODUCT_ID_OK))
-				.thenReturn(new Product(PRODUCT_ID_OK, "name", 1, "mock-addr"));
+				.thenReturn(Mono.just(new Product(PRODUCT_ID_OK, "name", 1, "mock-addr")));
 		when(integration.getRecommendations(PRODUCT_ID_OK))
-				.thenReturn(singletonList(
+				.thenReturn(Flux.fromIterable(singletonList(
 						new Recommendation(PRODUCT_ID_OK, 1, "author", 1, "content", "mockAddr")
-				));
+				)));
 		when(integration.getReviews(PRODUCT_ID_OK))
-				.thenReturn(singletonList(
+				.thenReturn(Flux.fromIterable(singletonList(
 						new Review(PRODUCT_ID_OK, 1, "author", "subj", "content", "mockAddr")
-				));
+				)));
 
 		when(integration.getProduct(PRODUCT_ID_NOT_FOUND))
 				.thenThrow(new NotFoundException("NOT FOUND: ".concat(String.valueOf(PRODUCT_ID_NOT_FOUND))));
@@ -61,7 +62,6 @@ class ProductCompositeServiceApplicationTests {
 
 	@Test
 	void createCompositeProduct1() {
-
 		ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1, null, null, null);
 
 		postAndVerifyProduct(compositeProduct, OK);
@@ -90,7 +90,6 @@ class ProductCompositeServiceApplicationTests {
 
 	@Test
 	void getProductById() {
-
 		getAndVerifyProduct(PRODUCT_ID_OK, OK)
 				.jsonPath("$.productId").isEqualTo(PRODUCT_ID_OK)
 				.jsonPath("$.recommendations.length()").isEqualTo(1)
@@ -99,7 +98,6 @@ class ProductCompositeServiceApplicationTests {
 
 	@Test
 	void getProductNotFound() {
-
 		getAndVerifyProduct(PRODUCT_ID_NOT_FOUND, NOT_FOUND)
 				.jsonPath("$.path").isEqualTo("/product-composite/" + PRODUCT_ID_NOT_FOUND)
 				.jsonPath("$.message").isEqualTo("NOT FOUND: " + PRODUCT_ID_NOT_FOUND);
@@ -107,7 +105,6 @@ class ProductCompositeServiceApplicationTests {
 
 	@Test
 	void getProductInvalidInput() {
-
 		getAndVerifyProduct(PRODUCT_ID_INVALID, UNPROCESSABLE_ENTITY)
 				.jsonPath("$.path").isEqualTo("/product-composite/" + PRODUCT_ID_INVALID)
 				.jsonPath("$.message").isEqualTo("INVALID: " + PRODUCT_ID_INVALID);

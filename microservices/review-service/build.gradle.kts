@@ -18,6 +18,7 @@ repositories {
 val mapstructVersion by extra { "1.5.5.Final" }
 val testcontainersVersion by extra { "1.18.3" }
 val mysqlConnectorVersion by extra { "8.1.0" }
+val springCloudVersion by extra { "2022.0.4" }
 
 dependencies {
 	implementation(project(":api"))
@@ -38,8 +39,17 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 
+	implementation("org.springframework.cloud:spring-cloud-starter-stream-rabbit")
+	implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
 }
 
 tasks.withType<Test> {
