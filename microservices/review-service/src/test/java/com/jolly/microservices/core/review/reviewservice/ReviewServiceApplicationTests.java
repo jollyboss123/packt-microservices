@@ -47,7 +47,6 @@ class ReviewServiceApplicationTests extends MySqlTestBase {
 
 	@Test
 	void getReviewsByProductId() {
-
 		int productId = 1;
 
 		assertEquals(0, repository.findByProductId(productId).size());
@@ -66,7 +65,6 @@ class ReviewServiceApplicationTests extends MySqlTestBase {
 
 	@Test
 	void duplicateError() {
-
 		int productId = 1;
 		int reviewId = 1;
 
@@ -80,14 +78,13 @@ class ReviewServiceApplicationTests extends MySqlTestBase {
 				InvalidInputException.class,
 				() -> sendCreateReviewEvent(productId, reviewId),
 				"Expected a InvalidInputException here!");
-		assertEquals("Duplicate key, Product Id: 1, Review Id:1", thrown.getMessage());
+		assertEquals("Duplicate key, Product Id: 1, Review Id: 1", thrown.getMessage());
 
 		assertEquals(1, repository.count());
 	}
 
 	@Test
 	void deleteReviews() {
-
 		int productId = 1;
 		int reviewId = 1;
 
@@ -102,15 +99,13 @@ class ReviewServiceApplicationTests extends MySqlTestBase {
 
 	@Test
 	void getReviewsMissingParameter() {
-
 		getAndVerifyReviewsByProductId("", BAD_REQUEST)
 				.jsonPath("$.path").isEqualTo("/review")
-				.jsonPath("$.message").isEqualTo("Required int parameter 'productId' is not present");
+				.jsonPath("$.message").isEqualTo("Required query parameter 'productId' is not present.");
 	}
 
 	@Test
 	void getReviewsInvalidParameter() {
-
 		getAndVerifyReviewsByProductId("?productId=no-integer", BAD_REQUEST)
 				.jsonPath("$.path").isEqualTo("/review")
 				.jsonPath("$.message").isEqualTo("Type mismatch.");

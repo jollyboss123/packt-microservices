@@ -19,6 +19,8 @@ For further reference, please consider the following sections:
 * [Building Dockerfile on M1](https://stackoverflow.com/questions/68984133/error-failed-to-solve-with-frontend-dockerfile-v0-failed-to-create-llb-defini)
 * [OpenAPI 3 & Spring Boot](https://springdoc.org)
 * [Single Container Pattern for Testcontainers](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers)
+* [MySQL image high memory usage](https://github.com/docker-library/mysql/issues/579)
+* [Docker Settings on Mac](https://docs.docker.com/desktop/settings/mac/)
 
 
 

@@ -8,7 +8,21 @@ services:
         limits:
           memory: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  product-p1:
+    build: microservices/product-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
     depends_on:
       mongodb:
         condition: service_healthy
@@ -22,7 +36,21 @@ services:
         limits:
           memory: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  recommendation-p1:
+    build: microservices/recommendation-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
     depends_on:
       mongodb:
         condition: service_healthy
@@ -36,7 +64,21 @@ services:
         limits:
           memory: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  review-p1:
+    build: microservices/review-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
     depends_on:
       mysql:
         condition: service_healthy
@@ -52,7 +94,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -65,8 +107,7 @@ services:
           memory: 512m
     ports:
       - "27017:27017"
-    command:
-      - mongod
+    command: mongod
     healthcheck:
       test: "mongo --eval 'db.stats().ok'"
       interval: 5s
@@ -79,6 +120,11 @@ services:
       resources:
         limits:
           memory: 512m
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
     ports:
       - "3306:3306"
     environment:
@@ -99,8 +145,8 @@ services:
         limits:
           memory: 512m
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 5672:5672
+      - 15672:15672
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s

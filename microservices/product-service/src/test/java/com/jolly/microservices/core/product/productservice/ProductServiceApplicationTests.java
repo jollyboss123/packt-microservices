@@ -68,7 +68,7 @@ class ProductServiceApplicationTests extends MongoTestBase {
 				InvalidInputException.class,
 				() -> sendCreateProductEvent(productId),
 				"Expected a InvalidInputException here!");
-		assertEquals("Duplicate key, Product Id: " + productId, thrown.getMessage());
+		assertEquals("Duplicate key, productId: " + productId, thrown.getMessage());
 	}
 
 	@Test

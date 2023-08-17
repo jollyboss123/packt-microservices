@@ -107,7 +107,7 @@ logging:
     com.jolly: DEBUG
 
 management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
+management.endpoints.web.exposure.include: "*" #TODO: in prod, should only expose health,info
 ---
 spring.config.activate.on-profile: docker
 
