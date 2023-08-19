@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   product:
+    platform: linux/arm64
     build: microservices/product-service
     deploy:
       resources:
@@ -16,6 +17,7 @@ services:
         condition: service_healthy
 
   recommendation:
+    platform: linux/arm64
     build: microservices/recommendation-service
     deploy:
       resources:
@@ -30,6 +32,7 @@ services:
         condition: service_healthy
 
   review:
+    platform: linux/arm64
     build: microservices/review-service
     deploy:
       resources:
@@ -44,13 +47,12 @@ services:
         condition: service_healthy
 
   product-composite:
+    platform: linux/arm64
     build: microservices/product-composite-service
     deploy:
       resources:
         limits:
           memory: 512m
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -58,6 +60,7 @@ services:
         condition: service_healthy
 
   mongodb:
+    platform: linux/arm64
     image: mongo:4.4.2
     deploy:
       resources:
@@ -74,6 +77,7 @@ services:
       retries: 60
 
   mysql:
+    platform: linux/arm64
     image: mysql:8.0
     deploy:
       resources:
@@ -93,6 +97,7 @@ services:
       retries: 60
 
   rabbitmq:
+    platform: linux/arm64
     image: rabbitmq:3.8.11-management-alpine
     deploy:
       resources:
@@ -106,3 +111,25 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+
+  eureka:
+    platform: linux/arm64
+    build: spring-cloud/eureka-server
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    ports:
+      - "8761:8761"
+
+  gateway:
+    platform: linux/arm64
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: spring-cloud/gateway
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    ports:
+      - "8080:8080"

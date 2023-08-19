@@ -30,6 +30,8 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
 	testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder")
 
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 }

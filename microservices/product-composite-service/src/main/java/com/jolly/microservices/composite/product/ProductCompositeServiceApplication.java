@@ -15,9 +15,11 @@ import org.springframework.boot.actuate.health.CompositeReactiveHealthContributo
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -81,6 +83,12 @@ public class ProductCompositeServiceApplication {
 	public Scheduler publishEventScheduler() {
 		LOG.info("Creates a messagingScheduler with connectionPoolSize = {}", threadPoolSize);
 		return Schedulers.newBoundedElastic(threadPoolSize, taskQueueSize, "publish-pool");
+	}
+
+	@Bean
+	@LoadBalanced
+	public WebClient.Builder loadBalancedWebClientBuilder() {
+		return WebClient.builder();
 	}
 
 	public static void main(String[] args) {

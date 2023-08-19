@@ -26,7 +26,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = {
 				"spring.cloud.stream.defaultBinder=rabbit",
-				"logging.level.com.jolly=DEBUG"
+				"logging.level.com.jolly=DEBUG",
+				"eureka.client.enabled=false"
 		}
 )
 class ReviewServiceApplicationTests extends MySqlTestBase {

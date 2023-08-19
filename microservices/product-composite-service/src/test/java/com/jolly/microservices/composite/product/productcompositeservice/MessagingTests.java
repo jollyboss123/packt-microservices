@@ -32,7 +32,6 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.ACCEPTED;
-import static org.springframework.http.HttpStatus.OK;
 
 /**
  * @author jolly
@@ -40,7 +39,8 @@ import static org.springframework.http.HttpStatus.OK;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
-                "spring.main.allow-bean-definition-overriding=true"
+                "spring.main.allow-bean-definition-overriding=true",
+                "eureka.client.enabled=false"
         }
 )
 @Import({TestChannelBinderConfiguration.class})
@@ -62,7 +62,6 @@ public class MessagingTests {
 
     @Test
     void createCompositeProduct1() {
-
         ProductAggregate composite = new ProductAggregate(1, "name", 1, null, null, null);
         postAndVerifyProduct(composite, ACCEPTED);
 
@@ -84,7 +83,6 @@ public class MessagingTests {
 
     @Test
     void createCompositeProduct2() {
-
         ProductAggregate composite = new ProductAggregate(1, "name", 1,
                 singletonList(new RecommendationSummary(1, "a", 1, "c")),
                 singletonList(new ReviewSummary(1, "a", "s", "c")), null);
