@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   product:
-    platform: linux/arm64
     build: microservices/product-service
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -17,12 +17,12 @@ services:
         condition: service_healthy
 
   recommendation:
-    platform: linux/arm64
     build: microservices/recommendation-service
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -32,12 +32,12 @@ services:
         condition: service_healthy
 
   review:
-    platform: linux/arm64
     build: microservices/review-service
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -47,29 +47,30 @@ services:
         condition: service_healthy
 
   product-composite:
-    platform: linux/arm64
     build: microservices/product-composite-service
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       rabbitmq:
         condition: service_healthy
+      auth-server:
+        condition: service_healthy
 
   mongodb:
-    platform: linux/arm64
     image: mongo:4.4.2
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     ports:
       - "27017:27017"
-    command:
-      - mongod
+    command: mongod
     healthcheck:
       test: "mongo --eval 'db.stats().ok'"
       interval: 5s
@@ -77,14 +78,19 @@ services:
       retries: 60
 
   mysql:
-    platform: linux/arm64
     image: mysql:8.0
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     ports:
       - "3306:3306"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
     environment:
       - MYSQL_ROOT_PASSWORD=rootpwd
       - MYSQL_DATABASE=review-db
@@ -97,15 +103,15 @@ services:
       retries: 60
 
   rabbitmq:
+    image: rabbitmq:3.8.11-management
     platform: linux/arm64
-    image: rabbitmq:3.8.11-management-alpine
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 5672:5672
+      - 15672:15672
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s
@@ -113,23 +119,39 @@ services:
       retries: 60
 
   eureka:
-    platform: linux/arm64
     build: spring-cloud/eureka-server
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
-    ports:
-      - "8761:8761"
+          memory: 256m
 
   gateway:
-    platform: linux/arm64
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     build: spring-cloud/gateway
+    platform: linux/arm64
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 256m
     ports:
-      - "8080:8080"
+      - "8443:8443"
+    depends_on:
+      auth-server:
+        condition: service_healthy
+
+  auth-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: spring-cloud/authorization-server
+    platform: linux/arm64
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:9999/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 60

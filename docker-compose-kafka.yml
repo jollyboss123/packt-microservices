@@ -91,8 +91,6 @@ services:
       resources:
         limits:
           memory: 512m
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,kafka
     depends_on:
@@ -182,4 +180,18 @@ services:
         limits:
           memory: 512m
     ports:
-      - "8080:8080"
+      - "8443:8443"
+
+  auth-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: spring-cloud/authorization-server
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: [ "CMD", "curl", "-fs", "http://localhost:9999/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60

@@ -22,7 +22,10 @@ dependencies {
 	implementation(project(":api"))
 	implementation(project(":util"))
 
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
+//	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-actuator") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:${springdocVersion}")
 
@@ -30,7 +33,19 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
 	testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder")
 
-	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+//	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+
+//	implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
+//	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+	implementation("org.springframework.boot:spring-boot-starter-security") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")

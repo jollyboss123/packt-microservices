@@ -18,9 +18,31 @@ repositories {
 extra["springCloudVersion"] = "2022.0.4"
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
-	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+//	implementation("org.springframework.boot:spring-boot-starter-actuator")
+//	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+//	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+//
+//	implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
+//	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-actuator") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+	implementation("org.springframework.cloud:spring-cloud-starter-gateway") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+	implementation("org.springframework.boot:spring-boot-starter-security") {
+		exclude(group = "org.springframework.boot", module = "spring-boot-starter-web")
+	}
+
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

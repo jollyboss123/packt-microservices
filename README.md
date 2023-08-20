@@ -1,8 +1,12 @@
 # Prototyping microservices
-Prototyping microservices based on Magnus Larsson's book with Spring Boot 3, Java 17 and dockerizing with eclipse-temurin:17-jre-alpine.
-Changes has been implemented using Java 17 specific updates e.g. record etc.
+Prototyping microservices based on Magnus Larsson's book.
+Changes have been made in accordance with Spring Boot 3, Java 17:
+* use of Java 17 record
+* fix spring security deprecates 
+* dockerizing with `eclipse-temurin:17-jre-alpine`
+* use of spring authorization server
 
-# Getting Started
+## Getting Started
 ### To test
 ```bash
 ./gradlew clean build && docker-compose build && ./test-em-all.bash start stop
@@ -12,7 +16,12 @@ Changes has been implemented using Java 17 specific updates e.g. record etc.
 ./gradlew build && docker-compose build && docker-compose up -d
 ```
 
-### Reference Documentation
+### To generate self-signed cert
+```bash
+keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore edge.p12 -validity 3650
+```
+
+## Reference Documentation
 For further reference, please consider the following sections:
 
 * [Microservices with Spring Boot and Spring Cloud](https://www.amazon.com/Microservices-Spring-Boot-Cloud-microservices/dp/1801072973)
@@ -21,6 +30,8 @@ For further reference, please consider the following sections:
 * [Single Container Pattern for Testcontainers](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers)
 * [MySQL image high memory usage](https://github.com/docker-library/mysql/issues/579)
 * [Docker Settings on Mac](https://docs.docker.com/desktop/settings/mac/)
+* [Spring Authorization Server](https://spring.io/projects/spring-authorization-server#overview)
+* [ReactiveJwtDecoder that could not be found issue](https://www.jianshu.com/p/70b926c23704)
 
 
 
