@@ -47,9 +47,10 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
         LOG.info("Will get composite product info for product.id={}", productId);
         return Mono.zip(
                 values -> createProductAggregate(
-                        (Product) values[0],
-                        (List<Recommendation>) values[1],
-                        (List<Review>) values[2],
+                        (SecurityContext) values[0],
+                        (Product) values[1],
+                        (List<Recommendation>) values[2],
+                        (List<Review>) values[3],
                         serviceUtil.getServiceAddress()
                 ),
                 getSecurityContextMono(),
@@ -118,11 +119,14 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
     }
 
     private ProductAggregate createProductAggregate(
+            SecurityContext sc,
             Product product,
             List<Recommendation> recommendations,
             List<Review> reviews,
             String serviceAddr
     ) {
+        logAuthorizationInfo(sc);
+
         // 1. Setup product info
         int productId = product.productId();
         String name = product.name();

@@ -20,6 +20,7 @@ public class SecurityConfig {
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange((authorize) -> authorize
                         .pathMatchers("/headerrouting/**").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
@@ -36,12 +37,4 @@ public class SecurityConfig {
                 );
         return http.build();
     }
-
-//    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-//    String jwkSetUri;
-//
-//    @Bean
-//    public ReactiveJwtDecoder jwtDecoder() {
-//        return NimbusReactiveJwtDecoder.withJwkSetUri(this.jwkSetUri).build();
-//    }
 }

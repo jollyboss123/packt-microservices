@@ -18,27 +18,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		)
 @AutoConfigureMockMvc
 class AuthorizationServerApplicationTests {
-
 	@Autowired
 	MockMvc mvc;
 
-//	@Test
-//	void requestTokenUsingClientCredentialsGrantType() throws Exception {
-//		this.mvc.perform(post("/oauth2/token")
-//						.param("grant_type", "client_credentials")
-//						.header("Authorization", "Basic cmVhZGVyOnNlY3JldA=="))
-//				.andExpect(status().isOk());
-//	}
-//
-//	@Test
-//	void requestOpenidConfiguration() throws Exception {
-//		this.mvc.perform(get("/.well-known/openid-configuration"))
-//				.andExpect(status().isOk());
-//	}
-//
-//	@Test
-//	void requestJwkSet() throws Exception {
-//		this.mvc.perform(get("/oauth2/jwks"))
-//				.andExpect(status().isOk());
-//	}
+	@Test
+	void requestTokenUsingClientCredentialsGrantType() throws Exception {
+		this.mvc.perform(post("/oauth2/token")
+						.param("grant_type", "client_credentials")
+						.header("Authorization", "Basic cmVhZGVyOnNlY3JldA=="))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	void requestOpenidConfiguration() throws Exception {
+		this.mvc.perform(get("/.well-known/openid-configuration"))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	void requestJwkSet() throws Exception {
+		this.mvc.perform(get("/oauth2/jwks"))
+				.andExpect(status().isOk());
+	}
 }
