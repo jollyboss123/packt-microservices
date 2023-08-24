@@ -51,6 +51,7 @@ public class AuthorizationServerConfig {
                 .scope("product:read")
                 .scope("product:write")
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
                 .build();
 
         RegisteredClient readerClient = RegisteredClient.withId(UUID.randomUUID().toString())
